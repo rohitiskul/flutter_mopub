@@ -17,16 +17,11 @@ import io.flutter.plugin.platform.PlatformViewFactory;
 class MopubBannerAdPlugin extends PlatformViewFactory {
 
     private final BinaryMessenger messenger;
-//    private Activity activity;
 
     MopubBannerAdPlugin(BinaryMessenger messenger) {
         super(StandardMessageCodec.INSTANCE);
         this.messenger = messenger;
     }
-
-//    void setActivity(Activity activity) {
-//        this.activity = activity;
-//    }
 
     @Override
     public PlatformView create(Context context, int viewId, Object args) {
@@ -38,17 +33,8 @@ class MopubBannerAdView implements MoPubView.BannerAdListener, PlatformView {
     private MoPubView adView;
     private MethodChannel channel;
 
-//    private final int id;
-//    private final Context context;
-//    private final HashMap args;
-//    private final BinaryMessenger messenger;
 
     MopubBannerAdView(Context context, int id, HashMap args, BinaryMessenger messenger) {
-//        this.id = id;
-//        this.context = context;
-//        this.args = args;
-//        this.messenger = messenger;
-
         channel = new MethodChannel(messenger, MopubConstants.BANNER_AD_CHANNEL + "_" + id);
         final String adUnitId = (String) args.get("adUnitId");
         final boolean autoRefresh = (boolean) args.get("autoRefresh");
@@ -61,17 +47,6 @@ class MopubBannerAdView implements MoPubView.BannerAdListener, PlatformView {
         adView.setBannerAdListener(this);
         adView.loadAd();
     }
-
-//    private void createAdView() {
-//        final String adUnitId = (String) args.get("adUnitId");
-//        final boolean autoRefresh = (boolean) args.get("autoRefresh");
-//        final int height = (int) args.get("height");
-
-//        adView = new View(context);
-//        adView.setAdUnitId(adUnitId);
-//        adView.setAutorefreshEnabled(autoRefresh);
-//        adView.setAdSize(getBannerAdSize(height));
-//    }
 
     private MoPubView.MoPubAdSize getBannerAdSize(double height) {
         if (height >= 280) {
@@ -145,30 +120,10 @@ class MopubBannerAdView implements MoPubView.BannerAdListener, PlatformView {
 
     @Override
     public void onInputConnectionLocked() {
+
     }
 
     @Override
     public void onInputConnectionUnlocked() {
     }
-
-//    @Override
-//    public void onFlutterViewAttached(View view) {
-//        Log.d("###FLUTTER### Mopub", "View attached " + id + " disposed?" + disposed);
-//        channel = new MethodChannel(messenger, MopubConstants.BANNER_AD_CHANNEL + "_" + id);
-//        if (disposed) {
-//            createAdView();
-//        }
-//        adView.setAutorefreshEnabled((boolean) args.get("autoRefresh"));
-//        adView.setBannerAdListener(this);
-//        adView.loadAd();
-//    }
-
-    //    @Override
-//    public void onFlutterViewDetached() {
-//        Log.d("###FLUTTER### Mopub", "View detached " + id);
-//        adView.setX(100);
-//        adView.setAutorefreshEnabled(false);
-//        adView.destroy();
-//        dispose();
-//    }
 }

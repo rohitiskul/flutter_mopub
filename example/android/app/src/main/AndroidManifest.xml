@@ -32,6 +32,9 @@
 
         <meta-data
             android:name="com.google.android.gms.ads.APPLICATION_ID"
-            android:value="<ADMOB_AD_ID_GOES_HERE>" />
+            android:value="ADMOB_AD_ID_GOES_HERE" />
+        <meta-data
+            android:name="applovin.sdk.key"
+            android:value="APPLOVIN_KEY_GOES_HERE" />
     </application>
 </manifest>

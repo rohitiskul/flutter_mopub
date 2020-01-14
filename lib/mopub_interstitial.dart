@@ -20,70 +20,78 @@ enum InterstitialAdResult {
 }
 
 class MoPubInterstitialAd {
-  static void Function(InterstitialAdResult, dynamic) _listener;
+  //Common channel for all interstitial ads until load
+  static const MethodChannel _channel = MethodChannel(INTERSTITIAL_AD_CHANNEL);
 
-  static const _channel = const MethodChannel(INTERSTITIAL_AD_CHANNEL);
+  MethodChannel _adChannel;
+  final void Function(InterstitialAdResult, dynamic) listener;
 
-  static Future<bool> loadInterstitialAd(String adUnitId,
-      {Function(InterstitialAdResult, dynamic) listener}) async {
+  final String adUnitId;
+
+  final bool reloadOnClosed;
+
+  MoPubInterstitialAd(this.adUnitId, this.listener,
+      {this.reloadOnClosed = false}) {
+    if (listener != null) {
+      _adChannel = MethodChannel('${INTERSTITIAL_AD_CHANNEL}_$adUnitId');
+      _adChannel.setMethodCallHandler(_handleEvent);
+    }
+  }
+
+  Future<void> load() async {
     try {
-      final args = <String, dynamic>{
-        "adUnitId": adUnitId,
-      };
+      await _channel.invokeMethod(LOAD_INTERSTITIAL_METHOD, <String, dynamic>{
+        'adUnitId': adUnitId,
+      });
+    } on PlatformException {
+      return;
+    }
+  }
 
-      final result = await _channel.invokeMethod(
-        LOAD_INTERSTITIAL_METHOD,
-        args,
-      );
-      _channel.setMethodCallHandler(_interstitialMethodCall);
-      _listener = listener;
-
+  Future<bool> isReady() async {
+    try {
+      var result = await _channel
+          .invokeMethod(HAS_INTERSTITIAL_METHOD, <String, dynamic>{
+        'adUnitId': adUnitId,
+      });
       return result;
     } on PlatformException {
       return false;
     }
   }
 
-  static Future<bool> showInterstitialAd() async {
-    try {
-      final result = await _channel.invokeMethod(SHOW_INTERSTITIAL_METHOD);
-      return result;
-    } on PlatformException {
-      return false;
-    }
+  Future<void> show() async {
+    await _channel.invokeMethod(SHOW_INTERSTITIAL_METHOD, <String, dynamic>{
+      'adUnitId': adUnitId,
+    });
   }
 
-  /// Removes the Ad.
-  static Future<bool> destroyInterstitialAd() async {
-    try {
-      final result = await _channel.invokeMethod(DESTROY_INTERSTITIAL_METHOD);
-      return result;
-    } on PlatformException {
-      return false;
-    }
+  void dispose() async {
+    // await _channel.invokeMethod(DESTROY_INTERSTITIAL_METHOD, <String, dynamic>{
+    //   'adUnitId': adUnitId,
+    // });
+    // _channel.setMethodCallHandler(null);
   }
 
-  static Future<dynamic> _interstitialMethodCall(MethodCall call) {
+  Future<dynamic> _handleEvent(MethodCall call) {
     switch (call.method) {
       case DISPLAYED_METHOD:
-        if (_listener != null)
-          _listener(InterstitialAdResult.DISPLAYED, call.arguments);
+        listener(InterstitialAdResult.DISPLAYED, call.arguments);
         break;
       case DISMISSED_METHOD:
-        if (_listener != null)
-          _listener(InterstitialAdResult.DISMISSED, call.arguments);
+        listener(InterstitialAdResult.DISMISSED, call.arguments);
+        if (reloadOnClosed) {
+          load();
+        }
         break;
       case ERROR_METHOD:
-        if (_listener != null)
-          _listener(InterstitialAdResult.ERROR, call.arguments);
+        listener(InterstitialAdResult.ERROR, call.arguments);        
         break;
       case LOADED_METHOD:
-        if (_listener != null)
-          _listener(InterstitialAdResult.LOADED, call.arguments);
+        listener(InterstitialAdResult.LOADED, call.arguments);
         break;
       case CLICKED_METHOD:
-        if (_listener != null)
-          _listener(InterstitialAdResult.CLICKED, call.arguments);
+        listener(InterstitialAdResult.CLICKED, call.arguments);
         break;
     }
     return Future.value(true);

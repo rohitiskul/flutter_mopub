@@ -41,5 +41,20 @@
 	</array>
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<false/>
+	<key>io.flutter.embedded_views_preview</key>
+	<true/>
+	<key>NSAppTransportSecurity</key>
+	<dict>
+		<key>NSAllowsArbitraryLoads</key>
+		<true/>
+		<key>NSAllowsArbitraryLoadsForMedia</key>
+		<true/>
+		<key>NSAllowsArbitraryLoadsInWebContent</key>
+    <true/>
+	</dict>
+	<key>GADApplicationIdentifier</key>
+	<string>add_google_id_here</string>
+	<key>AppLovinSdkKey</key>
+	<string>add_app_lovin_key_here</string>
 </dict>
 </plist>

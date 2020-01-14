@@ -14,6 +14,9 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
+  MoPubInterstitialAd interstitialAd;
+  MoPubRewardedVideoAd videoAd;
+
   @override
   void initState() {
     super.initState();
@@ -26,53 +29,84 @@ class _MyAppState extends State<MyApp> {
   }
 
   void _loadRewardedAd() {
-    MoPubRewardedVideoAd.loadRewardedVideoAd(
-      'REWARDED_AD_ID',
-      listener: (result, args) {
-        if (result == RewardedVideoAdResult.VIDEO_COMPLETE) {
-          print('Rewarded args: $args');
-        }
-        if (result == RewardedVideoAdResult.VIDEO_CLOSED) {
-          _loadRewardedAd();
-        }
-      },
-    );
+    videoAd = MoPubRewardedVideoAd('ad_unit_id',
+        (result, args) {
+      setState(() {
+        rewardedResult = '${result.toString()}____$args';
+      });
+      print('$result');
+      if (result == RewardedVideoAdResult.GRANT_REWARD) {
+        print('Grant reward: $args');
+      }
+    }, reloadOnClosed: true);
   }
 
   void _loadInterstitialAd() {
-    MoPubInterstitialAd.loadInterstitialAd(
+    interstitialAd = MoPubInterstitialAd(
       'ad_unit_id',
-      listener: (result, args) {
-        if (result == InterstitialAdResult.DISMISSED) {
-          _loadInterstitialAd();
-        }
+      (result, args) {
         print('Interstitial $result');
       },
-    );
+      reloadOnClosed: true,
+    );    
   }
 
   @override
   void dispose() {
+    interstitialAd.dispose();
     super.dispose();
-    MoPubInterstitialAd.destroyInterstitialAd();
   }
+
+  String rewardedResult = "unknown";
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       home: Scaffold(
         appBar: AppBar(
-          title: const Text('Plugin example app'),
+          title: const Text('MoPub SDK Sample'),
         ),
         body: Column(
           children: <Widget>[
-            RaisedButton(
-              onPressed: () {
-                MoPubInterstitialAd.showInterstitialAd();
-                // MoPubRewardedVideoAd.showRewardedVideoAd(
-                //     'REWARDED_AD_ID');
-              },
-              child: Text('Show interstitial'),
+            Row(
+              mainAxisSize: MainAxisSize.max,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget>[
+                RaisedButton(
+                  onPressed: () async {
+                    await interstitialAd.load();
+                  },
+                  child: Text('Load interstitial'),
+                ),
+                RaisedButton(
+                  onPressed: () async {
+                    interstitialAd.show();
+                  },
+                  child: Text('Show interstitial'),
+                ),
+              ],
+            ),
+            Row(
+              mainAxisSize: MainAxisSize.max,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget>[
+                RaisedButton(
+                  onPressed: () async {
+                    await videoAd.load();
+                  },
+                  child: Text('Load Video'),
+                ),
+                RaisedButton(
+                  onPressed: () async {
+                    var result = await videoAd.isReady();
+                    print('Is Ready $result');
+                    if (result) {
+                      videoAd.show();
+                    }
+                  },
+                  child: Text('Show Video'),
+                ),
+              ],
             ),
             MoPubBannerAd(
               adUnitId: 'ad_unit_id',
@@ -82,6 +116,7 @@ class _MyAppState extends State<MyApp> {
                 print('$result');
               },
             ),
+            Text(rewardedResult)
           ],
         ),
       ),

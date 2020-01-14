@@ -5,22 +5,15 @@ PODS:
   - FBSDKCoreKit/Basics (5.13.1)
   - Flutter (1.0.0)
   - flutter_mopub (0.0.1):
-    - AppLovinSDK
-    - FBAudienceNetwork
     - Flutter
-    - Google-Mobile-Ads-SDK
-    - IronSourceSDK
     - MoPub-AdMob-Adapters (= 7.52.0.3)
     - MoPub-Applovin-Adapters (= 6.10.2.0)
     - MoPub-FacebookAudienceNetwork-Adapters (= 5.6.0.0)
     - mopub-ios-sdk (~> 5.9)
-    - MoPub-IronSource-Adapters (= 6.11.0.0.0)
+    - MoPub-IronSource-Adapters (= 6.8.4.0)
     - MoPub-TapJoy-Adapters (= 12.4.0.0)
     - MoPub-UnityAds-Adapters (= 3.4.0.0)
     - MoPub-Vungle-Adapters (= 6.4.6.1)
-    - TapjoySDK (~> 12.4)
-    - UnityAds
-    - VungleSDK-iOS (~> 6.4)
   - Google-Mobile-Ads-SDK (7.52.0):
     - GoogleAppMeasurement (~> 6.0)
   - GoogleAppMeasurement (6.1.7):
@@ -45,7 +38,7 @@ PODS:
   - "GoogleUtilities/NSData+zlib (6.4.0)"
   - GoogleUtilities/Reachability (6.4.0):
     - GoogleUtilities/Logger
-  - IronSourceSDK (6.11.0.0)
+  - IronSourceSDK (6.8.4.0)
   - MoPub-AdMob-Adapters (7.52.0.3):
     - MoPub-AdMob-Adapters/MoPub (= 7.52.0.3)
     - MoPub-AdMob-Adapters/Network (= 7.52.0.3)
@@ -81,14 +74,14 @@ PODS:
     - mopub-ios-sdk/Avid
     - mopub-ios-sdk/Core
     - mopub-ios-sdk/Moat
-  - MoPub-IronSource-Adapters (6.11.0.0.0):
-    - MoPub-IronSource-Adapters/MoPub (= 6.11.0.0.0)
-    - MoPub-IronSource-Adapters/Network (= 6.11.0.0.0)
-  - MoPub-IronSource-Adapters/MoPub (6.11.0.0.0):
-    - mopub-ios-sdk/Core (~> 5.6)
-  - MoPub-IronSource-Adapters/Network (6.11.0.0.0):
-    - IronSourceSDK (= 6.11.0.0)
-    - mopub-ios-sdk/Core (~> 5.6)
+  - MoPub-IronSource-Adapters (6.8.4.0.0):
+    - MoPub-IronSource-Adapters/MoPub (= 6.8.4.0.0)
+    - MoPub-IronSource-Adapters/Network (= 6.8.4.0.0)
+  - MoPub-IronSource-Adapters/MoPub (6.8.4.0.0):
+    - mopub-ios-sdk/Core (~> 5.5)
+  - MoPub-IronSource-Adapters/Network (6.8.4.0.0):
+    - IronSourceSDK (= 6.8.4.0)
+    - mopub-ios-sdk/Core (~> 5.5)
   - MoPub-TapJoy-Adapters (12.4.0.0):
     - MoPub-TapJoy-Adapters/MoPub (= 12.4.0.0)
     - MoPub-TapJoy-Adapters/Network (= 12.4.0.0)
@@ -159,16 +152,16 @@ SPEC CHECKSUMS:
   FBAudienceNetwork: 1ea63543665445a3a5b4a059e8210a343b6ab3c1
   FBSDKCoreKit: 8fb98209109fb684937f05d534305edb18c20207
   Flutter: 0e3d915762c693b495b44d77113d4970485de6ec
-  flutter_mopub: 83e23951623ecac3a6144287e0d90e3f472fd639
+  flutter_mopub: dc70cfee454a6bd3c498a19ef07fdeef8f636fb4
   Google-Mobile-Ads-SDK: 62f6244637306cb60a1b4adda067f53224c7a860
   GoogleAppMeasurement: db118eb61a97dd8c4f7014e368d3c335cbbcf80a
   GoogleUtilities: 29bd0d8f850efbd28cff6d99e8b7da1f8d236bcf
-  IronSourceSDK: 7f0186b1808e83d40faf37283fba59e4053e828d
+  IronSourceSDK: a4a5f6f0ecbe08f9a6309201f006a0b35804490c
   MoPub-AdMob-Adapters: c912869ef4ca8fa4e55521a3a86ef7903ffea758
   MoPub-Applovin-Adapters: 3787c9dab7c67ae1c020f130d0b09b90ca1a2452
   MoPub-FacebookAudienceNetwork-Adapters: 3cec249235d12e3fec9a01bf559d608fa3ec05e1
   mopub-ios-sdk: 3d65133b95b6498aa871a66818a11a5ba307e565
-  MoPub-IronSource-Adapters: 23b548d9f190dc20adac2af9d817b56b98408067
+  MoPub-IronSource-Adapters: fcdc45827ddbd0bf7a4a06e882b0b5fa0686b784
   MoPub-TapJoy-Adapters: 9c9b59f9672ad6e85c94aff2ef0381e6f78bdcba
   MoPub-UnityAds-Adapters: e2b9da3bf40eb054d49559984bef9458d41825ec
   MoPub-Vungle-Adapters: 882de20aae17ff49e4944c568d5edd3b1eedfb8d

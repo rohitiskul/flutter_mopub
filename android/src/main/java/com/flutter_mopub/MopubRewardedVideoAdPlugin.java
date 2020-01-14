@@ -12,129 +12,120 @@ import java.util.Set;
 
 import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
+import io.flutter.plugin.common.PluginRegistry;
 
-class MopubRewardedVideoAdPlugin implements MethodChannel.MethodCallHandler, MoPubRewardedVideoListener {
+class MopubRewardedVideoAdPlugin implements MethodChannel.MethodCallHandler {
 
-    private MethodChannel channel;
-//    private Activity activity;
+    private PluginRegistry.Registrar registrar;
 
-    MopubRewardedVideoAdPlugin(MethodChannel channel) {
-        this.channel = channel;
+    MopubRewardedVideoAdPlugin(PluginRegistry.Registrar registrar) {
+        this.registrar = registrar;
     }
-
-//    void dispose() {
-//        methodChannel.setMethodCallHandler(null);
-//        methodChannel = null;
-//    }
-
-//    void setActivity(Activity activity) {
-//        this.activity = activity;
-//    }
-
 
     @Override
     public void onMethodCall(@NonNull MethodCall call, @NonNull MethodChannel.Result result) {
+        final HashMap args = (HashMap) call.arguments;
+        final String adUnitId = (String) args.get("adUnitId");
+
         switch (call.method) {
             case MopubConstants.SHOW_REWARDED_VIDEO_METHOD:
-                result.success(showAd((HashMap) call.arguments));
+
+                if (MoPubRewardedVideos.hasRewardedVideo(adUnitId))
+                    MoPubRewardedVideos.showRewardedVideo(adUnitId);
+
+                result.success(null);
                 break;
             case MopubConstants.LOAD_REWARDED_VIDEO_METHOD:
-                result.success(loadAd((HashMap) call.arguments));
+
+                final MethodChannel adChannel = new MethodChannel(registrar.messenger(),
+                        MopubConstants.REWARDED_VIDEO_CHANNEL + "_" + adUnitId);
+                MoPubRewardedVideos.setRewardedVideoListener(new RewardedVideoListener(adChannel));
+                if (MoPubRewardedVideos.hasRewardedVideo(adUnitId))
+                    return;
+                MoPubRewardedVideos.loadRewardedVideo(adUnitId);
+
+                result.success(null);
                 break;
-//            case MopubConstants.DESTROY_REWARDED_VIDEO_METHOD:
-//                result.success(destroyAd());
-//                break;
             case MopubConstants.HAS_REWARDED_VIDEO_METHOD:
-                result.success(hasRewardedVideo((HashMap) call.arguments));
+                boolean hasAd = MoPubRewardedVideos.hasRewardedVideo(adUnitId);
+                result.success(hasAd);
                 break;
             default:
                 result.notImplemented();
         }
     }
 
-    private boolean hasRewardedVideo(HashMap args) {
-        final String adUnitId = (String) args.get("adUnitId");
-        return MoPubRewardedVideos.hasRewardedVideo(adUnitId);
-    }
+    class RewardedVideoListener implements MoPubRewardedVideoListener {
 
-    private boolean loadAd(HashMap args) {
-        final String adUnitId = (String) args.get("adUnitId");
+        MethodChannel channel;
+        boolean didReceiveReward = false;
+        int rewardAmount = 0;
 
-        if (MoPubRewardedVideos.hasRewardedVideo(adUnitId))
-            return true;
+        RewardedVideoListener(MethodChannel channel) {
+            this.channel = channel;
+        }
 
-        MoPubRewardedVideos.setRewardedVideoListener(this);
-        MoPubRewardedVideos.loadRewardedVideo(adUnitId);
+        @Override
+        public void onRewardedVideoLoadSuccess(@NonNull String adUnitId) {
+            HashMap<String, Object> args = new HashMap<>();
+            args.put("adUnitId", adUnitId);
 
-        return true;
-    }
+            channel.invokeMethod(MopubConstants.LOADED_METHOD, args);
+        }
 
-    private boolean showAd(HashMap args) {
-        final String adUnitId = (String) args.get("adUnitId");
+        @Override
+        public void onRewardedVideoLoadFailure(@NonNull String adUnitId, @NonNull MoPubErrorCode errorCode) {
+            HashMap<String, Object> args = new HashMap<>();
+            args.put("adUnitId", adUnitId);
+            args.put("errorCode", errorCode.toString());
 
-        if (MoPubRewardedVideos.hasRewardedVideo(adUnitId))
-            MoPubRewardedVideos.showRewardedVideo(adUnitId);
+            channel.invokeMethod(MopubConstants.ERROR_METHOD, args);
+        }
 
-        return true;
-    }
+        @Override
+        public void onRewardedVideoStarted(@NonNull String adUnitId) {
+            HashMap<String, Object> args = new HashMap<>();
+            args.put("adUnitId", adUnitId);
 
-    @Override
-    public void onRewardedVideoLoadSuccess(@NonNull String adUnitId) {
-        HashMap<String, Object> args = new HashMap<>();
-        args.put("adUnitId", adUnitId);
+            channel.invokeMethod(MopubConstants.DISPLAYED_METHOD, args);
+        }
 
-        channel.invokeMethod(MopubConstants.LOADED_METHOD, args);
-    }
+        @Override
+        public void onRewardedVideoPlaybackError(@NonNull String adUnitId, @NonNull MoPubErrorCode errorCode) {
+            HashMap<String, Object> args = new HashMap<>();
+            args.put("adUnitId", adUnitId);
+            args.put("errorCode", errorCode.toString());
 
-    @Override
-    public void onRewardedVideoLoadFailure(@NonNull String adUnitId, @NonNull MoPubErrorCode errorCode) {
-        HashMap<String, Object> args = new HashMap<>();
-        args.put("adUnitId", adUnitId);
-        args.put("errorCode", errorCode.toString());
+            channel.invokeMethod(MopubConstants.REWARDED_PLAYBACK_ERROR, args);
+        }
 
-        channel.invokeMethod(MopubConstants.ERROR_METHOD, args);
-    }
+        @Override
+        public void onRewardedVideoClicked(@NonNull String adUnitId) {
+            HashMap<String, Object> args = new HashMap<>();
+            args.put("adUnitId", adUnitId);
 
-    @Override
-    public void onRewardedVideoStarted(@NonNull String adUnitId) {
-        HashMap<String, Object> args = new HashMap<>();
-        args.put("adUnitId", adUnitId);
+            channel.invokeMethod(MopubConstants.CLICKED_METHOD, args);
+        }
 
-        channel.invokeMethod(MopubConstants.REWARDED_PLAYBACK_STARTED, args);
-    }
+        @Override
+        public void onRewardedVideoClosed(@NonNull String adUnitId) {
+            HashMap<String, Object> args = new HashMap<>();
+            args.put("adUnitId", adUnitId);
 
-    @Override
-    public void onRewardedVideoPlaybackError(@NonNull String adUnitId, @NonNull MoPubErrorCode errorCode) {
-        HashMap<String, Object> args = new HashMap<>();
-        args.put("adUnitId", adUnitId);
-        args.put("errorCode", errorCode.toString());
+            channel.invokeMethod(MopubConstants.DISMISSED_METHOD, args);
+            if (didReceiveReward) {
+                didReceiveReward = false;
+                final HashMap<String, Object> rewardArgs = new HashMap<>();
+                rewardArgs.put("reward", rewardAmount);
+                channel.invokeMethod(MopubConstants.GRANT_REWARD, rewardArgs);
+            }
 
-        channel.invokeMethod(MopubConstants.REWARDED_PLAYBACK_ERROR, args);
-    }
+        }
 
-    @Override
-    public void onRewardedVideoClicked(@NonNull String adUnitId) {
-        HashMap<String, Object> args = new HashMap<>();
-        args.put("adUnitId", adUnitId);
-
-        channel.invokeMethod(MopubConstants.CLICKED_METHOD, args);
-    }
-
-    @Override
-    public void onRewardedVideoClosed(@NonNull String adUnitId) {
-        HashMap<String, Object> args = new HashMap<>();
-        args.put("adUnitId", adUnitId);
-
-        channel.invokeMethod(MopubConstants.REWARDED_VIDEO_CLOSED_METHOD, args);
-    }
-
-    @Override
-    public void onRewardedVideoCompleted(@NonNull Set<String> adUnitIds, @NonNull MoPubReward reward) {
-        HashMap<String, Object> args = new HashMap<>();
-//        args.put("adUnitIds", adUnitIds);
-        args.put("success", reward.isSuccessful());
-        args.put("reward", reward.isSuccessful() ? reward.getAmount() : 0);
-
-        channel.invokeMethod(MopubConstants.REWARDED_VIDEO_COMPLETED_METHOD, args);
+        @Override
+        public void onRewardedVideoCompleted(@NonNull Set<String> adUnitIds, @NonNull MoPubReward reward) {
+            didReceiveReward = true;
+            rewardAmount = reward.getAmount();
+        }
     }
 }

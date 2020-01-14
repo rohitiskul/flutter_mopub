@@ -9,6 +9,7 @@ final class MopubConstants {
 //    static final String IN_STREAM_VIDEO_CHANNEL = MAIN_CHANNEL + "/inStreamAd";
 
     static final String INIT_METHOD = "initialize";
+    static final String DISPOSE_METHOD = "dispose";
 
     static final String EXPANDED_METHOD = "expanded";
     static final String DISMISSED_METHOD = "dismissed";
@@ -17,6 +18,7 @@ final class MopubConstants {
     static final String LOADED_METHOD = "loaded";
     static final String CLICKED_METHOD = "clicked";
 
+    static final String HAS_INTERSTITIAL_METHOD = "hasInterstitialAd";
     static final String SHOW_INTERSTITIAL_METHOD = "showInterstitialAd";
     static final String LOAD_INTERSTITIAL_METHOD = "loadInterstitialAd";
     static final String DESTROY_INTERSTITIAL_METHOD = "destroyInterstitialAd";
@@ -25,9 +27,7 @@ final class MopubConstants {
     static final String SHOW_REWARDED_VIDEO_METHOD = "showRewardedAd";
     static final String LOAD_REWARDED_VIDEO_METHOD = "loadRewardedAd";
 
-    static final String REWARDED_PLAYBACK_STARTED = "rewardedVideoStarted";
     static final String REWARDED_PLAYBACK_ERROR = "rewardedVideoError";
-    static final String REWARDED_VIDEO_CLOSED_METHOD = "rewardedVideoClosed";
-    static final String REWARDED_VIDEO_COMPLETED_METHOD = "rewardedVideoCompleted";
+    static final String GRANT_REWARD = "grantReward";
 //    static final String DESTROY_REWARDED_VIDEO_METHOD = "destroyRewardedAd";
 }

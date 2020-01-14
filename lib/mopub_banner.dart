@@ -61,21 +61,34 @@ class _MoPubBannerAdState extends State<MoPubBannerAd>
   @override
   Widget build(BuildContext context) {
     super.build(context);
-    if (Platform.isIOS) return Container();
-    
+    var viewType = BANNER_AD_CHANNEL;
+    var params = <String, dynamic>{
+      "adUnitId": widget.adUnitId,
+      "autoRefresh": false,
+      "height": widget.bannerSize.height,
+    };
+
+    Widget platformView;
+    if (Platform.isIOS) {
+      platformView = UiKitView(
+        viewType: viewType,
+        creationParams: params,
+        creationParamsCodec: StandardMessageCodec(),
+        onPlatformViewCreated: _onBannerAdViewCreated,
+      );
+    } else {
+      platformView = AndroidView(
+        viewType: viewType,
+        creationParams: params,
+        creationParamsCodec: StandardMessageCodec(),
+        onPlatformViewCreated: _onBannerAdViewCreated,
+      );
+    }
+
     return Container(
       height: containerHeight,
       color: Colors.transparent,
-      child: AndroidView(
-        viewType: BANNER_AD_CHANNEL,
-        onPlatformViewCreated: _onBannerAdViewCreated,
-        creationParams: <String, dynamic>{
-          "adUnitId": widget.adUnitId,
-          "autoRefresh": true,
-          "height": widget.bannerSize.height,
-        },
-        creationParamsCodec: StandardMessageCodec(),
-      ),
+      child: platformView,
     );
   }
 

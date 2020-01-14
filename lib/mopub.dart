@@ -19,4 +19,12 @@ class MoPub {
       return;
     }
   }
+
+  static Future<void> dispose() async {
+    try {
+      await _channel.invokeMethod(DISPOSE_METHOD);
+    } on PlatformException {
+      return;
+    }
+  }
 }
